@@ -125,9 +125,14 @@ let PACER = {
   // attachments for a particular document).
   isAttachmentMenuPage: function (url, document) {
     let inputs = document.getElementsByTagName('input');
+    let bold = document.querySelector('div#cmecfMainContent p b');
     let pageCheck = PACER.isDocumentUrl(url) &&
       inputs.length &&
       inputs[inputs.length - 1].value === 'Download All';
+    if (!pageCheck) {
+      pageCheck = (bold &&
+		   bold.textContent === 'Document Selection Menu');
+    }
     return !!pageCheck;
   },
 
