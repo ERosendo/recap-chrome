@@ -126,8 +126,8 @@ function Recap() {
           cb(data || null);
         },
         error: function(xhr, textStatus, errorThrown){
-          console.error(`RECAP: Ajax error uploading docket. Status: ${textStatus}.` +
-                        `Error: ${errorThrown}`);
+          console.error(`RECAP: Ajax error uploading attachment page. Status: ${textStatus}.` +
+                        `Error: ${errorThrown}. raw: ${xhr.responseText}`);
         }
       });
     },
