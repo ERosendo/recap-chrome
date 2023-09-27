@@ -606,7 +606,7 @@ let PACER = {
     let filingCookieStr = cookieString.split('; ')
       .find((row) => row.startsWith('isFilingAccount'));
     let filingCookieVal = filingCookieStr && filingCookieStr.split('=')[1];
-    return !!filingCookieVal.match(/true/);
+    return !!(filingCookieVal && filingCookieVal.match(/true/));
   },
 
   // Returns true if the given court identifier is for an appellate court.
