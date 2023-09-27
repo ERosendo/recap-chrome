@@ -558,12 +558,15 @@ describe('The PACER module', function () {
     });
   });
 
-  describe('hasPacerCookie', function () {
-    const loggedInCookie = 'PacerSession=B7yuvmcj2F...9p5nDzEXsHE; ' + 'PacerPref=receipt=Y';
-    const altLoggedInCookie = 'PacerUser=B7yuvmcj2F...9p5nDzEXsHE; ' + 'PacerPref=receipt=Y';
-    const nonLoggedInCookie = 'PacerSession=unvalidated; PacerPref=receipt=Y';
-    const nonsenseCookie = 'Foo=barbaz; Baz=bazbar; Foobar=Foobar';
+  const loggedInCookie = 'PacerSession=B7yuvmcj2F...9p5nDzEXsHE; ' +
+	'PacerPref=receipt=Y';
+  const altLoggedInCookie = 'PacerUser=B7yuvmcj2F...9p5nDzEXsHE; ' +
+	'PacerPref=receipt=Y';
+  const isFilingAccountCookie = loggedInCookie + '; isFilingAccount=true';
+  const nonLoggedInCookie = 'PacerSession=unvalidated; PacerPref=receipt=Y';
+  const nonsenseCookie = 'Foo=barbaz; Baz=bazbar; Foobar=Foobar';
 
+  describe('hasPacerCookie', function () {
     it('returns true for a valid logged in cookie', function () {
       expect(PACER.hasPacerCookie(loggedInCookie)).toBe(true);
     });
@@ -578,6 +581,16 @@ describe('The PACER module', function () {
 
     it('returns false for nonsense cookie', function () {
       expect(PACER.hasPacerCookie(nonsenseCookie)).toBe(false);
+    });
+  });
+
+  describe('hasFilingCookie', function () {
+    it('returns false for a valid logged in cookie without isFilingAccount', function () {
+      expect(PACER.hasFilingCookie(loggedInCookie)).toBe(false);
+    });
+
+    it('returns true a valid isFilingAccount cookie', function () {
+      expect(PACER.hasFilingCookie(isFilingAccountCookie)).toBe(true);
     });
   });
 
