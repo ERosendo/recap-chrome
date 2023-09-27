@@ -3,6 +3,9 @@
 function Recap() {
   const DEBUG = false, // When true, don't publish what's sent to the archive.
     SERVER_ROOT = 'https://www.courtlistener.com/api/rest/v3/',
+
+    // Upload types are canonically defined in
+    // courtlistener/cl/recap/models.py as class UPLOAD_TYPE (singular)
     UPLOAD_TYPES = {
       'DOCKET': 1,
       'ATTACHMENT_PAGE': 2,
