@@ -603,10 +603,10 @@ let PACER = {
 
   // Given document.cookie, returns true if the user has filing rights.
   hasFilingCookie: function (cookieString){
-    let filingCookie = cookieString.split('; ')
-        .find((row) => row.startsWith('isFilingAccount'))
-        ?.split('=')[1];
-    return !!filingCookie.match(/true/);
+    let filingCookieStr = cookieString.split('; ')
+      .find((row) => row.startsWith('isFilingAccount'));
+    let filingCookieVal = filingCookieStr && filingCookieStr.split('=')[1];
+    return !!filingCookieVal.match(/true/);
   },
 
   // Returns true if the given court identifier is for an appellate court.
