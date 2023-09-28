@@ -139,8 +139,8 @@ function Recap() {
 	      'text/html', cb);
     },
 
-    uploadJSON: function(pacer_court, pacer_case_id, html, upload_type, cb){
-      _upload(pacer_court, pacer_case_id, html, upload_type,
+    uploadJSON: function(pacer_court, pacer_case_id, data, upload_type, cb){
+      _upload(pacer_court, pacer_case_id, data, upload_type,
 	      'application/json', cb);
     },
 
