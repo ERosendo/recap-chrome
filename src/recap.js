@@ -139,6 +139,11 @@ function Recap() {
 	      'text/html', cb);
     },
 
+    uploadJSON: function(pacer_court, pacer_case_id, html, upload_type, cb){
+      _upload(pacer_court, pacer_case_id, html, upload_type,
+	      'application/json', cb);
+    },
+
     // Asynchronously uploads a PDF document to the RECAP server, calling the callback with
     // a boolean success flag.
     uploadDocument: (
