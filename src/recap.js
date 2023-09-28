@@ -54,7 +54,8 @@ function Recap() {
   return {
 
     // Asks RECAP whether it has a docket page for the specified case.  If it
-    // is available, the callback will be called with a
+    // is available, the callback will be called with the CourtListener
+    // API `/dockets` endpoint results.
     getAvailabilityForDocket: function (pacer_court, pacer_case_id, docket_number_core ,cb) {
       if (!pacer_case_id && !docket_number_core) {
         console.error("RECAP: Cannot get availability of docket without pacer_case_id or docket_number_core.");
