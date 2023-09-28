@@ -81,7 +81,7 @@ async function addRecapInformation(msg) {
     // know this document is not supported.
     content_delegate.handleCombinedPDFView();
 
-    // If this is a Clams Register, we upload it to RECAP
+    // If this is a Claims Register, we upload it to RECAP
     content_delegate.handleClaimsPageView();
 
     // Check every link in the document to see if there is a free RECAP document
