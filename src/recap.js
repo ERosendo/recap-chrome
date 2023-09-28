@@ -46,6 +46,7 @@ function Recap() {
         console.error(`RECAP: Ajax error uploading ${upload_type}. ` +
 		      `Status: ${textStatus}.` +
 		      `Error: ${errorThrown}`);
+	cb(false);
       }
     });
   }
@@ -87,7 +88,8 @@ function Recap() {
         },
         error: function (xhr, textStatus, errorThrown) {
           console.error(`RECAP: Ajax error getting docket availability. Status: ` +
-            `${textStatus}. Error: ${errorThrown}.`);
+			`${textStatus}. Error: ${errorThrown}.`);
+	  cb(false);
         }
       });
     },
@@ -114,7 +116,8 @@ function Recap() {
           },
           error: function (xhr, textStatus, errorThrown) {
             console.error(`RECAP: Ajax error getting document availability. ` +
-              `Status: ${textStatus}. Error: ${errorThrown}`);
+			  `Status: ${textStatus}. Error: ${errorThrown}`);
+	    cb(false);
           }
         });
       } else {
@@ -195,7 +198,10 @@ function Recap() {
           cb(result || null);
           updateTabStorage({ [cb.tab.id]: { ['pdf_blob']: null } });
         })
-        .catch(error => console.log(`RECAP: Error uploading PDF: ${error}`));
+        .catch(error => {
+	  console.log(`RECAP: Error uploading PDF: ${error}`);
+	  cb(false);
+	});
     },
 
     // Upload a zip file to the RECAP server, calling the cb with ok flag
@@ -239,7 +245,7 @@ function Recap() {
           updateTabStorage({ [cb.tab.id]: { ['zip_blob']: null } });
         })
         .catch(error => {
-          cb(null);
+          cb(false);
           console.log(`RECAP: Error uploading Zip: ${error}`);
         });
     },
@@ -265,7 +271,10 @@ function Recap() {
           console.log("RECAP: Claims Page uploaded successfully");
           cb(result || null);
         })
-        .catch(error => console.log(`RECAP: The following error occurred: ${error}`));
+        .catch(error => {
+	  console.log(`RECAP: The following error occurred: ${error}`);
+	  cb(false);
+	});
     }
   };
 }
