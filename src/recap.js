@@ -21,6 +21,36 @@ function Recap() {
       'APPELLATE_CASE_QUERY_RESULT_PAGE': 15,
       'ACMS_DOCKET_JSON': 16,
     };
+
+  function _upload(pacer_court, pacer_case_id, html, upload_type,
+		   content_type, cb) {
+    let formData = new FormData();
+    formData.append('court', PACER.convertToCourtListenerCourt(pacer_court));
+    pacer_case_id && formData.append('pacer_case_id', pacer_case_id);
+    formData.append('upload_type', UPLOAD_TYPES[upload_type]);
+    formData.append('filepath_local', new Blob([html], { type: content_type }));
+    formData.append('debug', DEBUG);
+    $.ajax({
+      url: `${SERVER_ROOT}recap/`,
+      method: 'POST',
+      processData: false,
+      contentType: false,
+      data: formData,
+      success: function (data, textStatus, xhr) {
+        console.info(`RECAP: Successfully uploaded ${upload_type}: ` +
+          `'${textStatus}' with processing queue id of ` +
+          `${data['id']}`);
+        cb(data || null);
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        console.error(`RECAP: Ajax error uploading ${upload_type}. ` +
+		      `Status: ${textStatus}.` +
+		      `Error: ${errorThrown}`);
+      }
+    });
+  }
+
+
   return {
 
     // Asks RECAP whether it has a docket page for the specified case.  If it
@@ -93,81 +123,20 @@ function Recap() {
 
     // Uploads an HTML docket or docket history report to the RECAP server
     uploadDocket: function (pacer_court, pacer_case_id, html, upload_type, cb) {
-      let formData = new FormData();
-      formData.append('court', PACER.convertToCourtListenerCourt(pacer_court));
-      pacer_case_id && formData.append('pacer_case_id', pacer_case_id);
-      formData.append('upload_type', UPLOAD_TYPES[upload_type]);
-      formData.append('filepath_local', new Blob([html], { type: 'text/plain' }));
-      formData.append('debug', DEBUG);
-      $.ajax({
-        url: `${SERVER_ROOT}recap/`,
-        method: 'POST',
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function (data, textStatus, xhr) {
-          console.info(`RECAP: Successfully uploaded docket or docket ` +
-            `history report: '${textStatus}' with processing queue id of ` +
-            `${data['id']}`);
-          cb(data || null);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-          console.error(`RECAP: Ajax error uploading docket. Status: ${textStatus}.` +
-            `Error: ${errorThrown}`);
-        }
-      });
+      _upload(pacer_court, pacer_case_id, html, upload_type,
+	      'text/plain', cb);
     },
 
     // Uploads a "Document Selection Menu" page to the RECAP server, calling
     // the callback with a boolean success flag.
     uploadAttachmentMenu: function (pacer_court, pacer_case_id, html, upload_type, cb) {
-      let formData = new FormData();
-      formData.append('court', PACER.convertToCourtListenerCourt(pacer_court));
-      pacer_case_id && formData.append('pacer_case_id', pacer_case_id);
-      formData.append('upload_type', UPLOAD_TYPES[upload_type]);
-      formData.append('filepath_local', new Blob([html], { type: 'text/html' }));
-      formData.append('debug', DEBUG);
-      $.ajax({
-        url: `${SERVER_ROOT}recap/`,
-        method: 'POST',
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function (data, textStatus, xhr) {
-          console.info(`RECAP: Successfully uploaded attachment page: '${textStatus}' ` +
-            `with processing queue id of ${data['id']}`);
-          cb(data || null);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-          console.error(`RECAP: Ajax error uploading docket. Status: ${textStatus}.` +
-            `Error: ${errorThrown}`);
-        }
-      });
+      _upload(pacer_court, pacer_case_id, html, upload_type,
+	      'text/html', cb);
     },
 
     uploadIQueryPage: function(pacer_court, pacer_case_id, html, upload_type, cb){
-      let formData = new FormData();
-      formData.append('court', PACER.convertToCourtListenerCourt(pacer_court));
-      pacer_case_id && formData.append('pacer_case_id', pacer_case_id);
-      formData.append('upload_type', UPLOAD_TYPES[upload_type]);
-      formData.append('filepath_local', new Blob([html], { type: 'text/html' }));
-      formData.append('debug', DEBUG);
-      $.ajax({
-        url: `${SERVER_ROOT}recap/`,
-        method: 'POST',
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function (data, textStatus, xhr) {
-          console.info(`RECAP: Successfully uploaded iquery page: '${textStatus}' ` +
-            `with processing queue id of ${data['id']}`);
-          cb(data || null);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-          console.error(`RECAP: Ajax error uploading iquery page. Status: ${textStatus}.` +
-            `Error: ${errorThrown}`);
-        }
-      });
+      _upload(pacer_court, pacer_case_id, html, upload_type,
+	      'text/html', cb);
     },
 
     // Asynchronously uploads a PDF document to the RECAP server, calling the callback with
