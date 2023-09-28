@@ -82,8 +82,10 @@ AppellateDelegate.prototype.checkAcmsSessionState = () => {
 };
 
 
+AppellateDelegate.prototype.handleAcmsDocket = () => {
+
   // Used for debugging MutationObserver code.
-AppellateDelegate.prototype.loggingMutationObserver =
+  let loggingMutationObserver =
     (mutationList, observer) => {
       console.log(`mutationList is ${mutationList.length} records long`);
       for (const record of mutationList) {
@@ -102,7 +104,7 @@ AppellateDelegate.prototype.loggingMutationObserver =
       }
     };
   
-AppellateDelegate.prototype.footerObserver = (mutationList, observer) => {
+  let footerObserver = (mutationList, observer) => {
     for (const r of mutationList) {
       // We could restrict this to div#box, but that feels overspecific -- what
       // if the <footer> later moves around and has a different parent?
@@ -126,19 +128,12 @@ AppellateDelegate.prototype.footerObserver = (mutationList, observer) => {
       }
     }
   };
-
-AppellateDelegate.prototype.handleAcmsDocket = () => {
-
-  // queue 1 second session state check
-  console.log('xqueuing up...');
-  let id = window.setTimeout(this.checkAcmsSessionState, 1000);
-  console.log(`xtimeout id is ${id}`);
-
-  // The DOM begins as
+  
+  // The DOM begins as:
   //   <html>
   //     <body>
   //       <div id="app"/>
-  // And subsequently becomes
+  // And subsequently becomes:
   //   <html>
   //     <body>
   //       <div class="box">
@@ -149,10 +144,12 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
   //       </div>
 
   const body = document.querySelector('body');
-  const observer2 = new MutationObserver(this.loggingMutationObserver);
-  observer2.observe(body, { subtree: true, childList: true });
-  const observer = new MutationObserver(this.footerObserver);
+
+  const observer = new MutationObserver(footerObserver);
   observer.observe(body, { subtree: true, childList: true });
+
+  // const observer2 = new MutationObserver(loggingMutationObserver);
+  // observer2.observe(body, { subtree: true, childList: true });
 
 };
 
