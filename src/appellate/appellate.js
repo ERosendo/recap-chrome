@@ -68,6 +68,7 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 };
 
 AppellateDelegate.prototype.checkAcmsSessionState = () => {
+  // notreached
   if ('caseSummary' in sessionStorage) {
     console.log('we would upload the ACMS session json object(s)');
     console.log('caseSummary: ' +
@@ -85,6 +86,38 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
   console.log('queuing up...');
   let id = window.setTimeout(this.checkAcmsSessionState, 1000);
   console.log(`timeout id is ${id}`);
+
+  const elementToObserve = document.querySelector('body');
+
+  const observer = new MutationObserver((mutationList, MO) => {
+    console.log(`mutationList is ${mutationList.length} long`);
+
+    for (const record of mutationList) {
+      console.log(`mu type is ${record.type}`);
+      for (const node of record.addedNodes) {
+        console.log(`Added: ${node.nodeName} ${node.localName} id ${node.id} class <${node.classList}> ${node.textContent}`);
+	if (node.localName=='footer') {
+	  if ('caseSummary' in sessionStorage) {
+	    console.log('we would upload the ACMS session json object(s)');
+	    console.log('caseSummary: ' +
+			`${sessionStorage.caseSummary.substring(0,100)}...` +
+			` len=${sessionStorage.caseSummary.length}`);
+	  } else {
+	    console.log('still not there yet');
+	  }
+	}
+      }
+      for (const node of record.removedNodes) {
+        console.log(`Removed: ${node.nodeName} ${node.localName} id ${node.id} class <${node.classList}> ${node.textContent}`);
+      }
+      if (record.target.childNodes.length === 0) {
+        console.log('zero chilluns');
+      }
+      console.log(`chillun ${record.target.childNodes.length}`);
+    }
+  });
+  observer.observe(elementToObserve, { subtree: true, childList: true });
+
 };
 
 AppellateDelegate.prototype.handleCaseSearchPage = () => {
