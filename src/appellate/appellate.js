@@ -132,8 +132,10 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
   
   const body = document.querySelector('body');
 
-  // xxx: when this was AppelateDelegate.prototype.footerObserver, then reference to
-  // this.footerObserver failed, complaining it was not an object. ???
+  // xxx: when this was AppelateDelegate.prototype.footerObserver,
+  // then reference to this.footerObserver failed, complaining it was
+  // not an object.
+  // ???
   // So just use regular function I guess.
   const observer = new MutationObserver(footerObserver);
   observer.observe(body, { subtree: true, childList: true });
