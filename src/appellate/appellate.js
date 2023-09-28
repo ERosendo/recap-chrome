@@ -70,8 +70,22 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 
 AppellateDelegate.prototype.handleAcmsDocket = () => {
 
+  // The DOM begins as:
+  //   <html>
+  //     <body>
+  //       <div id="app"/>
+  // And subsequently becomes:
+  //   <html>
+  //     <body>
+  //       <div class="box">
+  //         <header>
+  //         <div class="app-subheader">
+  //         <div>
+  //         <footer>
+  //       </div>
+
   // Used for debugging MutationObserver code.
-  let loggingMutationObserver =
+  const loggingMutationObserver =
     (mutationList, observer) => {
       console.log(`mutationList is ${mutationList.length} records long`);
       for (const record of mutationList) {
@@ -90,7 +104,7 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
       }
     };
   
-  let footerObserver = (mutationList, observer) => {
+  const footerObserver = (mutationList, observer) => {
     for (const r of mutationList) {
       // We could restrict this to div#box, but that feels overspecific -- what
       // if the <footer> later moves around and has a different parent?
@@ -101,13 +115,14 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
 	  // Court InformationCourt HomePACER Service CenterChange ClientBilling
 	  // HistoryContact Us
           if ('caseSummary' in sessionStorage) {
+	    // xxx abstract this out
             console.log('we would upload the ACMS session json object(s)');
             console.log('caseSummary: ' +
                         `${sessionStorage.caseSummary.substring(0,100)}...` +
                         ` len=${sessionStorage.caseSummary.length}`);
             observer.disconnect();
           } else {
-            console.log('We observerd a <footer> being added, but no '+
+            console.log('We observed a <footer> being added, but no '+
                         'sessionStorage.caseSummary; this is unexpected.');
           }
         }
@@ -115,22 +130,11 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
     }
   };
   
-  // The DOM begins as:
-  //   <html>
-  //     <body>
-  //       <div id="app"/>
-  // And subsequently becomes:
-  //   <html>
-  //     <body>
-  //       <div class="box">
-  //         <header>
-  //         <div class="app-subheader">
-  //         <div>
-  //         <footer>
-  //       </div>
-
   const body = document.querySelector('body');
 
+  // xxx: when this was AppelateDelegate.prototype.footerObserver, then reference to
+  // this.footerObserver failed, complaining it was not an object. ???
+  // So just use regular function I guess.
   const observer = new MutationObserver(footerObserver);
   observer.observe(body, { subtree: true, childList: true });
 
