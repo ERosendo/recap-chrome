@@ -81,42 +81,78 @@ AppellateDelegate.prototype.checkAcmsSessionState = () => {
   }
 };
 
-AppellateDelegate.prototype.handleAcmsDocket = () => {
-  // queue 1 second session state check
-  console.log('queuing up...');
-  let id = window.setTimeout(this.checkAcmsSessionState, 1000);
-  console.log(`timeout id is ${id}`);
 
-  const elementToObserve = document.querySelector('body');
-
-  const observer = new MutationObserver((mutationList, MO) => {
-    console.log(`mutationList is ${mutationList.length} long`);
-
-    for (const record of mutationList) {
-      console.log(`mu type is ${record.type}`);
-      for (const node of record.addedNodes) {
-        console.log(`Added: ${node.nodeName} ${node.localName} id ${node.id} class <${node.classList}> ${node.textContent}`);
-	if (node.localName=='footer') {
-	  if ('caseSummary' in sessionStorage) {
-	    console.log('we would upload the ACMS session json object(s)');
-	    console.log('caseSummary: ' +
-			`${sessionStorage.caseSummary.substring(0,100)}...` +
-			` len=${sessionStorage.caseSummary.length}`);
-	  } else {
-	    console.log('still not there yet');
-	  }
-	}
+  // Used for debugging MutationObserver code.
+AppellateDelegate.prototype.loggingMutationObserver =
+    (mutationList, observer) => {
+      console.log(`mutationList is ${mutationList.length} records long`);
+      for (const record of mutationList) {
+        const t = record.target;
+        console.log(` Record type is ${record.type}, `+
+          `target ${t.localName} id <${t.id}> class <${t.classList}>`);
+        for (const node of record.addedNodes) {
+          console.log(`  Added: ${node.nodeName} ${node.localName} ` +
+            `id <${node.id}> class <${node.classList}> ${node.textContent}`);
+        }
+        for (const node of record.removedNodes) {
+          console.log(` Removed: ${node.nodeName} ${node.localName}` +
+            ` id ${node.id} class <${node.classList}> ${node.textContent}`);
+        }
+        console.log(` Child nodes: ${t.childNodes.length}`);
       }
-      for (const node of record.removedNodes) {
-        console.log(`Removed: ${node.nodeName} ${node.localName} id ${node.id} class <${node.classList}> ${node.textContent}`);
+    };
+  
+AppellateDelegate.prototype.footerObserver = (mutationList, observer) => {
+    for (const r of mutationList) {
+      // We could restrict this to div#box, but that feels overspecific -- what
+      // if the <footer> later moves around and has a different parent?
+      for (const a of r.addedNodes) {
+        if (a.localName === 'footer') {
+          // Record type is childList, target div id <> class <box>
+	  //  Added: FOOTER footer id <> class <app-footer no-print>
+	  // Court InformationCourt HomePACER Service CenterChange ClientBilling
+	  // HistoryContact Us
+          if ('caseSummary' in sessionStorage) {
+            console.log('we would upload the ACMS session json object(s)');
+            console.log('caseSummary: ' +
+                        `${sessionStorage.caseSummary.substring(0,100)}...` +
+                        ` len=${sessionStorage.caseSummary.length}`);
+            observer.disconnect();
+          } else {
+            console.log('We observerd a <footer> being added, but no '+
+                        'sessionStorage.caseSummary; this is unexpected.');
+          }
+        }
       }
-      if (record.target.childNodes.length === 0) {
-        console.log('zero chilluns');
-      }
-      console.log(`chillun ${record.target.childNodes.length}`);
     }
-  });
-  observer.observe(elementToObserve, { subtree: true, childList: true });
+  };
+
+AppellateDelegate.prototype.handleAcmsDocket = () => {
+
+  // queue 1 second session state check
+  console.log('xqueuing up...');
+  let id = window.setTimeout(this.checkAcmsSessionState, 1000);
+  console.log(`xtimeout id is ${id}`);
+
+  // The DOM begins as
+  //   <html>
+  //     <body>
+  //       <div id="app"/>
+  // And subsequently becomes
+  //   <html>
+  //     <body>
+  //       <div class="box">
+  //         <header>
+  //         <div class="app-subheader">
+  //         <div>
+  //         <footer>
+  //       </div>
+
+  const body = document.querySelector('body');
+  const observer2 = new MutationObserver(this.loggingMutationObserver);
+  observer2.observe(body, { subtree: true, childList: true });
+  const observer = new MutationObserver(this.footerObserver);
+  observer.observe(body, { subtree: true, childList: true });
 
 };
 
