@@ -67,20 +67,6 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
   }
 };
 
-AppellateDelegate.prototype.checkAcmsSessionState = () => {
-  // notreached
-  if ('caseSummary' in sessionStorage) {
-    console.log('we would upload the ACMS session json object(s)');
-    console.log('caseSummary: ' +
-      `${sessionStorage.caseSummary.substring(0,100)}...` +
-      ` len=${sessionStorage.caseSummary.length}`);
-  } else {
-    console.log('queuing up again...');
-    let id = window.setTimeout(this.checkAcmsSessionState, 1000);
-    console.log(`timeout id is ${id}`);
-  }
-};
-
 
 AppellateDelegate.prototype.handleAcmsDocket = () => {
 
