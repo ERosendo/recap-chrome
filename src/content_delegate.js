@@ -297,16 +297,15 @@ ContentDelegate.prototype.handleDocketDisplayPage = async function () {
       }
     };
     if (isDocketDisplayUrl) {
-      this.recap.uploadDocket(this.court, this.pacer_case_id, document.documentElement.innerHTML, 'DOCKET', (ok) =>
-        callback(ok)
-      );
+      this.recap.uploadDocket(this.court, this.pacer_case_id,
+        document.documentElement.innerHTML, 'DOCKET', callback);
     } else if (isDocketHistoryDisplayUrl) {
       this.recap.uploadDocket(
         this.court,
         this.pacer_case_id,
         document.documentElement.innerHTML,
         'DOCKET_HISTORY_REPORT',
-        (ok) => callback(ok)
+        callback
       );
     }
   } else {

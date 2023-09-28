@@ -303,7 +303,7 @@ AppellateDelegate.prototype.handleCaseQueryPage = async function () {
       this.pacer_case_id,
       document.documentElement.innerHTML,
       'APPELLATE_CASE_QUERY_PAGE',
-      (ok) => callback(ok)
+      callback
     );
   }
 };
@@ -444,7 +444,7 @@ AppellateDelegate.prototype.handleDocketDisplayPage = async function () {
       this.pacer_case_id,
       document.documentElement.innerHTML,
       'APPELLATE_DOCKET',
-      (ok) => callback(ok)
+      callback,
     );
   } else {
     console.info(`RECAP: Not uploading docket. RECAP is disabled.`);
@@ -480,7 +480,7 @@ AppellateDelegate.prototype.handleAttachmentPage = async function () {
     this.pacer_case_id,
     document.documentElement.innerHTML,
     'APPELLATE_ATTACHMENT_PAGE',
-    (ok) => callback(ok)
+    callback
   );
 };
 
