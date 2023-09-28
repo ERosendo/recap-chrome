@@ -67,24 +67,38 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
   }
 };
 
-AppellateDelegate.prototype.checkAcmsSessionState = () => {
-  if ('caseSummary' in sessionStorage) {
-    console.log('we would upload the ACMS session json object(s)');
-    console.log('caseSummary: ' +
-      `${sessionStorage.caseSummary.substring(0,100)}...` +
-      ` len=${sessionStorage.caseSummary.length}`);
+AppellateDelegate.prototype.checkAcmsSessionState = (alarm) => {
+  if (alarm.name === 'handleAcmsDocket') {
+    if ('caseSummary' in sessionStorage) {
+      console.log('we would upload the ACMS session json object(s)');
+      console.log('caseSummary: ' +
+        `${sessionStorage.caseSummary.substring(0,100)}...` +
+        ` len=${sessionStorage.caseSummary.length}`);
+    } else {
+      console.log('queuing up again...');
+      browser.alarms.create('handleAcmsDocket', { delayInMinutes: 0.016 });
+      // let id = window.setTimeout(this.checkAcmsSessionState, 1000);
+      console.log('no alarm id -- timeout id is id');
+    }
   } else {
-    console.log('queuing up again...');
-    let id = window.setTimeout(this.checkAcmsSessionState, 1000);
-    console.log(`timeout id is ${id}`);
+    console.log('some other alarm!');
   }
 };
 
 AppellateDelegate.prototype.handleAcmsDocket = () => {
   // queue 1 second session state check
   console.log('queuing up...');
-  let id = window.setTimeout(this.checkAcmsSessionState, 1000);
-  console.log(`timeout id is ${id}`);
+  // let id = window.setTimeout(this.checkAcmsSessionState, 1000);
+
+  // xxx
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/
+  //   API/alarms/create
+  // seems to say Object but then uses some anonymmous property
+  // weirdshit syntax?
+
+  browser.alarms.onAlarm.addListener(this.checkAcmsSessionState);
+  browser.alarms.create('handleAcmsDocket', { delayInMinutes: 0.016 });
+  console.log('no alarm id?');
 };
 
 AppellateDelegate.prototype.handleCaseSearchPage = () => {
