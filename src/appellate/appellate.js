@@ -16,6 +16,23 @@ let AppellateDelegate = function (tabId, court, url, path, links) {
 // Identify the current page using the URL and the query string,
 // then dispatch the associated handler
 AppellateDelegate.prototype.dispatchPageHandler = function () {
+
+  // acms:
+  if (PACER.isACMSWebsite(this.url)) {
+    // https://ca9-showdoc.azurewebsites.us/download-confirmation/
+    // c61cb56b-9a5c-ee11-be6e-001dd8087d6a?loadEntry=1
+    if (this.path.startsWith('/download-confirmation')) {
+      console.log('we would handle an ACMS download page here if we could');
+    // https://ca9-showdoc.azurewebsites.us/23-2082
+    } else if (this.path.match(/^\/[0-9\-]+$/)) {
+      // this.handleDocketDisplayPage();
+      this.handleAcmsDocket();
+      // this.attachRecapLinksToEligibleDocs();
+      console.log('We would attach links based on the acms JSON.');
+    }
+    /* Fall through to CM/ECF, probably not what should happen */
+  }
+
   let targetPage = this.queryParameters.get('servlet') || APPELLATE.getServletFromInputs();
   switch (targetPage) {
     case 'CaseSummary.jsp':
@@ -48,6 +65,26 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
       }
       break;
   }
+};
+
+AppellateDelegate.prototype.checkAcmsSessionState = () => {
+  if ('caseSummary' in sessionStorage) {
+    console.log('we would upload the ACMS session json object(s)');
+    console.log('caseSummary: ' +
+      `${sessionStorage.caseSummary.substring(0,100)}...` +
+      ` len=${sessionStorage.caseSummary.length}`);
+  } else {
+    console.log('queuing up again...');
+    let id = window.setTimeout(this.checkAcmsSessionState, 1000);
+    console.log(`timeout id is ${id}`);
+  }
+};
+
+AppellateDelegate.prototype.handleAcmsDocket = () => {
+  // queue 1 second session state check
+  console.log('queuing up...');
+  let id = window.setTimeout(this.checkAcmsSessionState, 1000);
+  console.log(`timeout id is ${id}`);
 };
 
 AppellateDelegate.prototype.handleCaseSearchPage = () => {
