@@ -67,7 +67,9 @@ let PACER = {
   },
 
   isACMSWebsite: function(url){
-    return url.toLowerCase().includes('azurewebsites.us');
+    match = url.toLowerCase().match(
+      /^\w+:\/\/(\w+)-showdoc\.azurewebsites\.us(?:\/.*)?$/);
+    return match?match[1]:false;
   },
 
   // Returns true if the URL is for the login page
