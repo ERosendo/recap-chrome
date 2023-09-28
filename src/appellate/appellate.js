@@ -68,7 +68,7 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 };
 
 
-AppellateDelegate.prototype.handleAcmsDocket = () => {
+AppellateDelegate.prototype.handleAcmsDocket = async function () {
 
   // The DOM begins as:
   //   <html>
@@ -104,7 +104,7 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
       }
     };
   
-  const footerObserver = (mutationList, observer) => {
+  const footerObserver = async (mutationList, observer) => {
     for (const r of mutationList) {
       // We could restrict this to div#box, but that feels overspecific -- what
       // if the <footer> later moves around and has a different parent?
@@ -120,6 +120,33 @@ AppellateDelegate.prototype.handleAcmsDocket = () => {
             console.log('caseSummary: ' +
                         `${sessionStorage.caseSummary.substring(0,100)}...` +
                         ` len=${sessionStorage.caseSummary.length}`);
+            const options = await getItemsFromStorage('options');
+            if (options['recap_enabled']) {
+              this.recap.uploadJSON(
+                this.court,
+                this.pacer_case_id,
+                sessionStorage.caseSummary,
+                'ACMS_DOCKET_JSON',
+                (ok) => {
+		  console.log("in cb");
+                  if (ok) {
+		    console.log("cb success");
+                    addAlertButtonInRecapAction(this.court, this.pacer_case_id);
+		    // xxx what does this do?
+                    history.replaceState({ uploaded: true }, '');
+                    this.notifier.showUpload(
+		      'Docket uploaded to the public RECAP Archive.',
+		      () => {}
+		    );
+                  } else {
+		    console.log("cb fail");
+		  }
+                });
+            } else {
+              console.info('RECAP: Not uploading docket json. ' +
+			   'RECAP is disabled.');
+            }
+
             observer.disconnect();
           } else {
             console.log('We observed a <footer> being added, but no '+
