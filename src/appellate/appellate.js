@@ -122,11 +122,11 @@ AppellateDelegate.prototype.handleAcmsDocket = async function () {
                         ` len=${sessionStorage.caseSummary.length}`);
             const options = await getItemsFromStorage('options');
             if (options['recap_enabled']) {
-              this.recap.uploadJSON(
+              this.recap.uploadDocket(
                 this.court,
                 this.pacer_case_id,
                 sessionStorage.caseSummary,
-                'ACMS_DOCKET_JSON',
+                'APPELLATE_DOCKET',
                 (ok) => {
 		  console.log("in cb");
                   if (ok) {
