@@ -70,8 +70,6 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 
 AppellateDelegate.prototype.handleAcmsDocket = async function () {
 
-  this.pacer_case_id = await APPELLATE.getCaseId(this.tabId, this.queryParameters, this.docId, this.docketNumber);
-
   // The DOM begins as:
   //   <html>
   //     <body>
