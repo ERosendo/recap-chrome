@@ -16,14 +16,21 @@ let AppellateDelegate = function (tabId, court, url, path, links) {
 // Identify the current page using the URL and the query string,
 // then dispatch the associated handler
 AppellateDelegate.prototype.dispatchPageHandler = function () {
-
   // acms:
   if (PACER.isACMSWebsite(this.url)) {
     // https://ca9-showdoc.azurewebsites.us/download-confirmation/
     // c61cb56b-9a5c-ee11-be6e-001dd8087d6a?loadEntry=1
-    if (this.path.startsWith('/download-confirmation')) {
-      console.log('we would handle an ACMS download page here if we could');
-    // https://ca9-showdoc.azurewebsites.us/23-2082
+    if (this.path.startsWith('/download-confirmation/')) {
+      console.log('we would handle a download page here if we could');
+      // https://ca2-showdoc.azurewebsites.us/full-docket/
+      // e15ebc78-9507-4639-8a61-4bc42e613a66
+    } else if (this.path.startsWith('/full-docket/')) {
+      console.log('we would handle an ACMS full docket here if we could');
+      // https://ca2-showdoc.azurewebsites.us/documents-list/
+      // bde556a7-bdde-ed11-a7c6-001dd806a1fd
+    } else if (this.path.startsWith('/documents-list/')) {
+      console.log('we would handle an ACMS attachment page here if we could');
+      // https://ca9-showdoc.azurewebsites.us/23-2082
     } else if (this.path.match(/^\/[0-9\-]+$/)) {
       // this.handleDocketDisplayPage();
       this.handleAcmsDocket();
