@@ -71,6 +71,11 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 AppellateDelegate.prototype.handleAcmsDocket = async function () {
 
   const processDocket = async () => {
+    
+    const caseSummary = JSON.parse(sessionStorage.caseSummary);
+    const caseId = caseSummary.caseDetails.caseId;
+    this.pacer_case_id = caseId;
+
     console.log('we would upload the ACMS session json object(s)');
     console.log('caseSummary: ' +
                 `${sessionStorage.caseSummary.substring(0,100)}...` +
