@@ -71,36 +71,36 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 AppellateDelegate.prototype.handleAcmsDocket = async function () {
 
   const processDocket = async () => {
-            console.log('we would upload the ACMS session json object(s)');
-            console.log('caseSummary: ' +
-                        `${sessionStorage.caseSummary.substring(0,100)}...` +
-                        ` len=${sessionStorage.caseSummary.length}`);
-            const options = await getItemsFromStorage('options');
-            if (options['recap_enabled']) {
-              this.recap.uploadDocket(
-                this.court,
-                this.pacer_case_id,
-                sessionStorage.caseSummary,
-                'APPELLATE_DOCKET',
-                (ok) => {
-		  console.log("in cb");
-                  if (ok) {
-		    console.log("cb success");
-                    addAlertButtonInRecapAction(this.court, this.pacer_case_id);
-		    // xxx what does this do?
-                    history.replaceState({ uploaded: true }, '');
-                    this.notifier.showUpload(
-		      'Docket uploaded to the public RECAP Archive.',
-		      () => {}
-		    );
-                  } else {
-		    console.log("cb fail");
-		  }
-                });
-            } else {
-              console.info('RECAP: Not uploading docket json. ' +
-			   'RECAP is disabled.');
-            }
+    console.log('we would upload the ACMS session json object(s)');
+    console.log('caseSummary: ' +
+                `${sessionStorage.caseSummary.substring(0,100)}...` +
+                ` len=${sessionStorage.caseSummary.length}`);
+    const options = await getItemsFromStorage('options');
+    if (options['recap_enabled']) {
+      this.recap.uploadDocket(
+        this.court,
+        this.pacer_case_id,
+        sessionStorage.caseSummary,
+        'APPELLATE_DOCKET',
+        (ok) => {
+	  console.log("in cb");
+          if (ok) {
+	    console.log("cb success");
+            addAlertButtonInRecapAction(this.court, this.pacer_case_id);
+	    // xxx what does this do?
+            history.replaceState({ uploaded: true }, '');
+            this.notifier.showUpload(
+	      'Docket uploaded to the public RECAP Archive.',
+	      () => {}
+	    );
+          } else {
+	    console.log("cb fail");
+	  }
+        });
+    } else {
+      console.info('RECAP: Not uploading docket json. ' +
+		   'RECAP is disabled.');
+    }
   }
 
   // The DOM begins as:
