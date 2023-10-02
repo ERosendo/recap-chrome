@@ -21,7 +21,7 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
     // https://ca9-showdoc.azurewebsites.us/download-confirmation/
     // c61cb56b-9a5c-ee11-be6e-001dd8087d6a?loadEntry=1
     if (this.path.startsWith('/download-confirmation/')) {
-      console.log('we would handle a download page here if we could');
+      this.handleDownloadConfirmationPage();
       // https://ca2-showdoc.azurewebsites.us/full-docket/
       // e15ebc78-9507-4639-8a61-4bc42e613a66
     } else if (this.path.startsWith('/full-docket/')) {
@@ -72,6 +72,51 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
       }
       break;
   }
+};
+
+AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
+  const wrapperMutationObserver = (mutationList, observer) => {
+    for (const r of mutationList) {
+      for (const n of r.addedNodes) {
+        if (n.localName === 'div') {
+          // Insert script to store Vue data in the storage
+          APPELLATE.storeDownloadDataInSession();
+
+          // Check if the submit button is already created on the page
+          let acceptChargesButtons = document.getElementsByTagName('button');
+          if (!acceptChargesButtons) {
+            return;
+          }
+
+          // Remove default listener for the submit button
+          let submitButton = acceptChargesButtons[0];
+          let clonedSubmitButton = submitButton.cloneNode(true);
+          submitButton.replaceWith(clonedSubmitButton);
+
+          clonedSubmitButton.addEventListener('click', function () {
+            // Gather data to request PDF file
+            let queryParameters = new URLSearchParams(window.location.search);
+            let includePageNumbers = queryParameters.get('includePageNumbers') ? true : false;
+            let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
+            let vueData = JSON.parse(sessionStorage.getItem('downloadConfirmationData'));
+
+            const mergePdfFilesRequest = {
+              mergeScope: 'External',
+              pagination: includePageNumbers,
+              header: showPDFHeaderInput,
+              docketEntryDocuments: vueData.docketEntryDocuments,
+            };
+
+            /* TODO: Use the mergePdfFilesRequest to request the PDF doc */
+          });
+        }
+      }
+    }
+  };
+
+  const wrapper = document.getElementsByClassName('download-confirmation-wrapper')[0];
+  const observer = new MutationObserver(wrapperMutationObserver);
+  observer.observe(wrapper, { subtree: true, childList: true });
 };
 
 

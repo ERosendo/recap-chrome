@@ -422,4 +422,23 @@ let APPELLATE = {
 
     return recap_div;
   },
+
+  // Adds the vue data attributes to the session storage
+  storeDownloadDataInSession: () => {
+    var code =
+      '(' +
+      function () {
+        let contentWrapper = document.getElementsByClassName('text-center')[0];
+        let vueMainDiv = contentWrapper.parentElement;
+        let vueDataProperties = vueMainDiv.__vue__._data;
+        sessionStorage.setItem('downloadConfirmationData', JSON.stringify(vueDataProperties));
+      } +
+      ')();';
+
+    let script = document.createElement('script');
+    script.textContent = code;
+    (document.head || document.documentElement).appendChild(script);
+
+    script.remove();
+  },
 };
