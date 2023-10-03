@@ -149,6 +149,16 @@ let APPELLATE = {
     // The extension is able to get the pacer_case_id and saves it to the tab storage when the Case Selection
     // shows only a case but this approach is not possible when multiple cases are listed so this method allows
     // us to support Case Selection pages with multiple cases.
+    //
+    // Do not do this for ACMS cases. Although they have a CMECF
+    // caseId number, it's really a "shadow" case ID number that is
+    // not used in the ACMS system. Instead, the ACMS system uses a
+    // GUID to track these cases, and we need that GUID (which we
+    // extract from session storage), and we use it for our
+    // pacer_case_id.
+    // If we added the CMECF shadow pacer_case_id to the URL, we would
+    // introduce confusion about whether we should ever be using that
+    // number (we should not be using that number).
 
     document.querySelectorAll('a[href*="caseid"]').forEach((caseQueryAnchor) => {
       let queryUrl = new URL(caseQueryAnchor.href, window.location);
@@ -160,6 +170,12 @@ let APPELLATE = {
       let caseSummaryAnchor = caseQueryAnchor.parentElement.firstChild;
       // This has the side effect of making this URL absolute, when it may have started out relative.
       let summaryUrl = new URL(caseSummaryAnchor.href, window.location);
+
+      // Do not do this for ACMS cases. See above.
+      if (PACER.isACMSWebsite(summaryUrl.href)) {
+        return;
+      }
+
       summaryUrl.searchParams.set('caseId', caseId);
       caseSummaryAnchor.setAttribute('href', summaryUrl);
       caseSummaryAnchor.dataset.recap = 'Modified by RECAP Extension to add caseId attribute.';
