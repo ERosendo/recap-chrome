@@ -60,7 +60,7 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
       break;
     case 'ShowDocMulti':
       this.handleCombinedPdfPageView();
-      break
+      break;
     default:
       if (APPELLATE.isAttachmentPage()) {
         this.handleAttachmentPage();
