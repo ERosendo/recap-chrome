@@ -78,7 +78,9 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
   const wrapperMutationObserver = (mutationList, observer) => {
     for (const r of mutationList) {
       for (const n of r.addedNodes) {
-        if (n.localName === 'div') {
+        let hasReceipt = n.textContent.toLowerCase().includes("transaction receipt")
+        let hasAcceptChargesButton = n.textContent.toLowerCase().includes("accept charges and retrieve")
+        if (n.localName === 'div' && hasReceipt && hasAcceptChargesButton) {
           // Insert script to store Vue data in the storage
           APPELLATE.storeDownloadDataInSession();
 
