@@ -84,7 +84,7 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
           // Insert script to store Vue data in the storage
           APPELLATE.storeDownloadDataInSession();
 
-          // Check if the submit button is already created on the page
+          // Check if the accept charges button is already created on the page
           let acceptChargesButtons = document.getElementsByTagName('button');
           if (!acceptChargesButtons) {
             return;
