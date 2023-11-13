@@ -156,6 +156,7 @@ function Recap() {
       pacer_doc_id,
       document_number,
       attachment_number,
+      document_guid = null,
       cb
     ) => {
       console.info([
@@ -164,7 +165,8 @@ function Recap() {
         `pacer_case_id: ${pacer_case_id}`,
         `pacer_doc_id: ${pacer_doc_id}`,
         `document_number: ${document_number},`,
-        `attachment_number: ${attachment_number}.`
+        `attachment_number: ${attachment_number}.`,
+        `document_guid: ${document_guid}.`,
       ].join(' '));
 
       // extract the tabId from the enhanced callback
@@ -180,6 +182,9 @@ function Recap() {
           document_number && formData.append('document_number', document_number);
           if (attachment_number && attachment_number !== '0') {
             formData.append('attachment_number', attachment_number);
+          }
+          if (document_guid) {
+            formData.append('acms_document_guid', document_guid);
           }
           formData.append('filepath_local', blob);
           formData.append('upload_type', UPLOAD_TYPES['PDF']);
