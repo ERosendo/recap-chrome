@@ -3,6 +3,7 @@
 // Make services callable from content scripts.
 exportInstance(Notifier);
 exportInstance(Recap);
+exportInstance(Acms);
 
 function setDefaultOptions(details) {
   // Set options to their default values.
@@ -140,6 +141,7 @@ async function injectContentScript(tabId, status, url) {
           { file: 'content_delegate.js'},
           { file: 'appellate/utils.js'},
           { file: 'appellate/appellate.js'},
+          { file: 'appellate/acms_api.js'},
           { file: 'content.js'},
       ])
       }
