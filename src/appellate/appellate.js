@@ -85,15 +85,14 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
           APPELLATE.storeDownloadDataInSession();
 
           // Check if the accept charges button is already created on the page
-          let acceptChargesButtons = document.getElementsByTagName('button');
-          if (!acceptChargesButtons) {
+          let acceptChargesButton = document.querySelector('button');
+          if (!acceptChargesButton) {
             return;
           }
 
           // Remove default listener for the submit button
-          let submitButton = acceptChargesButtons[0];
-          let clonedSubmitButton = submitButton.cloneNode(true);
-          submitButton.replaceWith(clonedSubmitButton);
+          let clonedAcceptChargesButton = acceptChargesButton.cloneNode(true);
+          acceptChargesButton.replaceWith(clonedAcceptChargesButton);
 
           clonedSubmitButton.addEventListener('click', function () {
             // Gather data to request PDF file
