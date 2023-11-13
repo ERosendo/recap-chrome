@@ -7,6 +7,7 @@ let AppellateDelegate = function (tabId, court, url, path, links) {
   this.path = path;
   this.links = links || [];
   this.recap = importInstance(Recap);
+  this.acms = importInstance(Acms);
   this.notifier = importInstance(Notifier);
   this.queryParameters = APPELLATE.getQueryParameters(this.url);
   this.docId = APPELLATE.getDocIdFromURL(this.queryParameters);
@@ -122,8 +123,19 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
       header: showPDFHeaderInput,
       docketEntryDocuments: downloadData.docketEntryDocuments.map((data) => toMergePdfItem(data)),
     };
-
-    // TODO: Use the mergePdfFilesRequest to request the PDF doc
+    let previousPageHtml = document.documentElement.innerHTML;
+    // Use the mergePdfFilesRequest to request the PDF doc
+    this.acms.mergePdfFiles(ApiUrl, Token, mergePdfFilesRequest, (pdf_url) => {
+      httpRequest(
+        pdf_url,
+        null,
+        null,
+        function (type, ab, xhr) {
+          let requestHandler = handleDocFormResponse.bind(this);
+          requestHandler(type, ab, xhr, previousPageHtml, documentData);
+        }.bind(this)
+      );
+    });
   }
 
   const wrapperMutationObserver = (mutationList, observer) => {
