@@ -92,6 +92,15 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
     this.pacer_case_id = downloadData.caseSummary.caseDetails.caseId;
     this.acmsDocumentGuid = downloadData.docketEntryDocuments[0].docketDocumentDetailsId;
 
+    // Collect relevant document information
+    let title = document.querySelector('p.font-weight-bold').innerHTML.trim();
+    let dataFromTitle = APPELLATE.parseReceiptPageTitle(title);
+    let documentData = {
+      docket_number: downloadData.caseSummary.caseDetails.caseNumber,
+      doc_number: downloadData.docketEntry.entryNumber,
+      att_number: downloadData.docketEntry.documentCount > 1 ? dataFromTitle.att_number : 0,
+    };
+
     const toMergePdfItem = (data) => ({
       acms_docketdocumentdetailsid: data && data.docketDocumentDetailsId,
       acms_name: data && data.name,
