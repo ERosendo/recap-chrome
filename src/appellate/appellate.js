@@ -90,10 +90,21 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
             return;
           }
 
-          // Remove default listener for the submit button
+          // Clone the accept charges button to remove the default onclick event.
+          // The default event handler retrieves an URL for the PDF and then navigate
+          // to this page, but if we wait until the handler finishes, we wont be able
+          // to use the same link to get the doc as blob object because the URL seems
+          // to be a one-time-use link and attempting to access it after the handler
+          // has used it will result in an error message stating that the file retrieval
+          // attempt failed.
           let clonedAcceptChargesButton = acceptChargesButton.cloneNode(true);
           acceptChargesButton.replaceWith(clonedAcceptChargesButton);
 
+          // Add a custom onclick event to the accept charges button. The handle of this
+          // new event performs an additional task before displaying the document. Upon
+          // clicking the button, the document retrieval process will remain unchanged,
+          // but the retrieved blob object will be uploaded to the RECAP archive before
+          // the document is rendered on the page.
           clonedSubmitButton.addEventListener('click', function () {
             // Gather data to request PDF file
             let queryParameters = new URLSearchParams(window.location.search);
