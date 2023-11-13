@@ -108,6 +108,10 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
             return;
           }
 
+          // Get doc_id from the sessionStorage
+          let downloadData = JSON.parse(sessionStorage.getItem('recapDownloadConfirmationData'));
+          this.docId = downloadData.docketEntry.docketEntryId;
+
           // Clone the accept charges button to remove the default onclick event.
           // The default event handler retrieves an URL for the PDF and then navigate
           // to this page, but if we wait until the handler finishes, we wont be able
