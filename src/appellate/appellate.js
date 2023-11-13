@@ -81,18 +81,33 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
     let queryParameters = new URLSearchParams(window.location.search);
     let includePageNumbers = queryParameters.get('includePageNumbers') ? true : false;
     let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
-    let vueData = JSON.parse(sessionStorage.getItem('downloadConfirmationData'));
+    let downloadData = JSON.parse(sessionStorage.getItem('recapDownloadConfirmationData'));
 
     // Get the ACMS API URL and token from the sessionStorage object
     let appConfiguration = JSON.parse(sessionStorage.getItem('recapACMSConfiguration'));
     let { ApiUrl } = appConfiguration.AppSettings;
     let { Token } = appConfiguration.AuthToken;
 
+    const toMergePdfItem = (data) => ({
+      acms_docketdocumentdetailsid: data && data.docketDocumentDetailsId,
+      acms_name: data && data.name,
+      acms_documenturl: data && data.documentUrl,
+      acms_casefilingdocumenturl: data && data.caseFilingDocumentUrl,
+      acms_documentpermission: data && data.documentPermission,
+      acms_pagecount: data && data.pageCount,
+      acms_filesize: data && data.fileSize,
+      billablepages: data && data.billablePages,
+      cost: data && data.cost,
+      acms_documentnumber: data && data.documentNumber,
+      searchValue: data && data.searchValue,
+      searchTransaction: data && data.searchTransaction,
+    });
+
     const mergePdfFilesRequest = {
       mergeScope: 'External',
       pagination: includePageNumbers,
       header: showPDFHeaderInput,
-      docketEntryDocuments: vueData.docketEntryDocuments,
+      docketEntryDocuments: downloadData.docketEntryDocuments.map((data) => toMergePdfItem(data)),
     };
 
     // TODO: Use the mergePdfFilesRequest to request the PDF doc
