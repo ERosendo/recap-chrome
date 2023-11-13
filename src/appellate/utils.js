@@ -351,6 +351,7 @@ let APPELLATE = {
     //
     //  - Document: PDF Document (Case: 20-15019, Document: 11)
     //  - Document: PDF Document (Case: 20-15019, Document: 1-1) (document from attachment page)
+    //  - Document: PDF Document (Case: 20-15019, Document: 1.1) (document from ACMS)
     //
     // this method uses regex expressions to match that information from the title and returns an object with the following
     // attributes:
@@ -358,7 +359,7 @@ let APPELLATE = {
     //  - doc_number
     //  - att_number
 
-    let dataFromAttachment = /^Document: PDF Document \(Case: ([^']*), Document: (\d+)-(\d+)\)/.exec(title_string);
+    let dataFromAttachment = /^Document: PDF Document \(Case: ([^']*), Document: (\d+)[-.]+(\d+)\)/.exec(title_string);
     let dataFromSingleDoc = /^Document: PDF Document \(Case: ([^']*), Document: (\d+)\)/.exec(title_string);
     if (!dataFromAttachment && !dataFromSingleDoc) {
       return null;
