@@ -88,6 +88,10 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
     let { ApiUrl } = appConfiguration.AppSettings;
     let { Token } = appConfiguration.AuthToken;
 
+    // Get the pacer_case_id and document GUID from the sessionStorage object
+    this.pacer_case_id = downloadData.caseSummary.caseDetails.caseId;
+    this.acmsDocumentGuid = downloadData.docketEntryDocuments[0].docketDocumentDetailsId;
+
     const toMergePdfItem = (data) => ({
       acms_docketdocumentdetailsid: data && data.docketDocumentDetailsId,
       acms_name: data && data.name,
