@@ -83,6 +83,11 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
     let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
     let vueData = JSON.parse(sessionStorage.getItem('downloadConfirmationData'));
 
+    // Get the ACMS API URL and token from the sessionStorage object
+    let appConfiguration = JSON.parse(sessionStorage.getItem('recapACMSConfiguration'));
+    let { ApiUrl } = appConfiguration.AppSettings;
+    let { Token } = appConfiguration.AuthToken;
+
     const mergePdfFilesRequest = {
       mergeScope: 'External',
       pagination: includePageNumbers,
