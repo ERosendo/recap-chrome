@@ -128,6 +128,16 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
           // but the retrieved blob object will be uploaded to the RECAP archive before
           // the document is rendered on the page.
           clonedAcceptChargesButton.addEventListener('click', startUploadProcess.bind(this));
+
+          // Query the server to check the availability of the document in the RECAP archive.
+          this.recap.getAvailabilityForDocuments([this.docId], this.court, (api_results) => {
+            console.info(`RECAP: Got results from API. Running callback on API results to ` + `insert banner`);
+            let result = api_results.results.filter((obj) => obj.pacer_doc_id == this.docId, this)[0];
+            if (!result) {
+              return;
+            }
+            insertAvailableDocBanner(result.filepath_local, 'div.box');
+          });
         }
       }
     }
