@@ -75,6 +75,24 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
 };
 
 AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
+
+  async function startUploadProcess() {
+    // Gather data to request PDF file
+    let queryParameters = new URLSearchParams(window.location.search);
+    let includePageNumbers = queryParameters.get('includePageNumbers') ? true : false;
+    let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
+    let vueData = JSON.parse(sessionStorage.getItem('downloadConfirmationData'));
+
+    const mergePdfFilesRequest = {
+      mergeScope: 'External',
+      pagination: includePageNumbers,
+      header: showPDFHeaderInput,
+      docketEntryDocuments: vueData.docketEntryDocuments,
+    };
+
+    // TODO: Use the mergePdfFilesRequest to request the PDF doc
+  }
+
   const wrapperMutationObserver = (mutationList, observer) => {
     for (const r of mutationList) {
       for (const n of r.addedNodes) {
@@ -105,22 +123,7 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
           // clicking the button, the document retrieval process will remain unchanged,
           // but the retrieved blob object will be uploaded to the RECAP archive before
           // the document is rendered on the page.
-          clonedSubmitButton.addEventListener('click', function () {
-            // Gather data to request PDF file
-            let queryParameters = new URLSearchParams(window.location.search);
-            let includePageNumbers = queryParameters.get('includePageNumbers') ? true : false;
-            let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
-            let vueData = JSON.parse(sessionStorage.getItem('downloadConfirmationData'));
-
-            const mergePdfFilesRequest = {
-              mergeScope: 'External',
-              pagination: includePageNumbers,
-              header: showPDFHeaderInput,
-              docketEntryDocuments: vueData.docketEntryDocuments,
-            };
-
-            /* TODO: Use the mergePdfFilesRequest to request the PDF doc */
-          });
+          clonedAcceptChargesButton.addEventListener('click', startUploadProcess.bind(this));
         }
       }
     }
