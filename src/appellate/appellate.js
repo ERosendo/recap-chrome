@@ -102,6 +102,26 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
       att_number: downloadData.docketEntry.documentCount > 1 ? dataFromTitle.att_number : 0,
     };
 
+    // Remove element from the page to show loading message
+    let mainDiv = document.querySelector('.download-confirmation-wrapper');
+    mainDiv.innerHTML = '';
+
+    let loadingTextDiv = document.createElement('div');
+    loadingTextDiv.classList.add('box', 'mt-2');
+
+    let loadingTextElement = document.createElement('h4');
+    loadingTextElement.classList.add('text-center', 'mt-0');
+    let spinner = document.createElement('i');
+    spinner.classList.add('mdi', 'mdi-spin', 'mdi-loading', 'mr-2');
+    let spanText = document.createElement('span');
+    spanText.innerHTML = `Download in progress for case number ${downloadData.caseSummary.caseDetails.caseNumber}`;
+
+    loadingTextElement.appendChild(spinner);
+    loadingTextElement.appendChild(spanText);
+    loadingTextDiv.appendChild(loadingTextElement);
+
+    mainDiv.append(loadingTextDiv);
+
     const toMergePdfItem = (data) => ({
       acms_docketdocumentdetailsid: data && data.docketDocumentDetailsId,
       acms_name: data && data.name,
