@@ -80,7 +80,7 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
   async function startUploadProcess() {
     // Gather data to request PDF file
     let queryParameters = new URLSearchParams(window.location.search);
-    let includePageNumbers = queryParameters.get('includePageNumbers') ? true : false;
+    let includePageNumbers = !!queryParameters.get('includePageNumbers');
     let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
     let downloadData = JSON.parse(sessionStorage.getItem('recapDownloadConfirmationData'));
 
