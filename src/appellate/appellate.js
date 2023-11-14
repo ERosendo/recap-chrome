@@ -182,6 +182,10 @@ AppellateDelegate.prototype.handleAcmsDocket = async function () {
         // Insert the RECAP icon next to the docket entry link
         recap_div.insertAfter(anchor);
       }
+      let spinner = document.getElementById('recap-button-spinner');
+      if (spinner) {
+        spinner.classList.add('recap-btn-spinner-hidden');
+      }
     });
   };
 
