@@ -106,6 +106,30 @@ AppellateDelegate.prototype.handleAcmsDocket = async function () {
     }
   }
 
+  const insertRecapButton = () => {
+    // Query the first table with case data and insert the RECAP actions button
+    let caseInformationTable = document.querySelector('table.case-information');
+    // Get a reference to the parent node
+    const parentDiv = caseInformationTable.parentNode;
+    const existingActionButton = document.getElementById('recap-action-button');
+    if (!existingActionButton) {
+      let button = recapActionsButton(this.court, this.pacer_case_id, false);
+      parentDiv.insertBefore(button, caseInformationTable);
+    }
+
+    this.recap.getAvailabilityForDocket(this.court, this.pacer_case_id, null, (result) => {
+      if (result.count === 0) {
+        console.warn('RECAP: Zero results found for docket lookup.');
+      } else if (result.count > 1) {
+        console.error(`RECAP: More than one result found for docket lookup. Found ${result.count}`);
+      } else {
+        addAlertButtonInRecapAction(this.court, this.pacer_case_id);
+        let cl_id = getClIdFromAbsoluteURL(result.results[0].absolute_url);
+        addSearchDocketInRecapAction(cl_id);
+      }
+    });
+  };
+
   const attachLinkToDocs = async () => {
     // Get the docket info from the sessionStorage obj
     const caseSummary = JSON.parse(sessionStorage.caseSummary);
@@ -208,6 +232,7 @@ AppellateDelegate.prototype.handleAcmsDocket = async function () {
           if ('caseSummary' in sessionStorage) {
 	    processDocket();
       attachLinkToDocs();
+      insertRecapButton();
             observer.disconnect();
           } else {
             console.log('We observed a <footer> being added, but no '+
