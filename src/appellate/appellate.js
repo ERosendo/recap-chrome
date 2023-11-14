@@ -246,20 +246,29 @@ AppellateDelegate.prototype.handleAcmsDocket = async function () {
       }
     }
   };
-  
-  const body = document.querySelector('body');
 
-  // xxx: when this was AppelateDelegate.prototype.footerObserver,
-  // then reference to this.footerObserver failed, complaining it was
-  // not an object.
-  // ???
-  // So just use regular function I guess.
-  const observer = new MutationObserver(footerObserver);
-  observer.observe(body, { subtree: true, childList: true });
+  const footer = document.querySelector('footer')
+  // Checks whether the footer is rendered or not, indicating that the page
+  // has fully loaded. Once confirmed, proceed with reloading the RECAP icons.
+  // This check is particularly useful when users click the 'Refresh RECAP links'
+  // option in the RECAP button, because the page is not reloaded and there are no
+  // changes being made to the DOM.
+  if (footer){
+    attachLinkToDocs();
+  } else {
+    const body = document.querySelector('body');
 
-  // const observer2 = new MutationObserver(loggingMutationObserver);
-  // observer2.observe(body, { subtree: true, childList: true });
+    // xxx: when this was AppelateDelegate.prototype.footerObserver,
+    // then reference to this.footerObserver failed, complaining it was
+    // not an object.
+    // ???
+    // So just use regular function I guess.
+    const observer = new MutationObserver(footerObserver);
+    observer.observe(body, { subtree: true, childList: true });
 
+    // const observer2 = new MutationObserver(loggingMutationObserver);
+    // observer2.observe(body, { subtree: true, childList: true });
+  }
 };
 
 AppellateDelegate.prototype.handleCaseSearchPage = () => {
