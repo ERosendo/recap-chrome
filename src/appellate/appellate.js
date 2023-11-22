@@ -212,6 +212,15 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
     });
   }
 
+  const addRecapBanner = (api_results) => {
+    console.info(`RECAP: Got results from API. Running callback on API results to ` + `insert banner`);
+    let result = api_results.results.filter((obj) => obj.pacer_doc_id == this.docId, this)[0];
+    if (!result) {
+      return;
+    }
+    insertAvailableDocBanner(result.filepath_local, 'div.box');
+  }
+
   const wrapperMutationObserver = (mutationList, observer) => {
     for (const r of mutationList) {
       for (const n of r.addedNodes) {
@@ -249,14 +258,14 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
           clonedAcceptChargesButton.addEventListener('click', startUploadProcess.bind(this));
 
           // Query the server to check the availability of the document in the RECAP archive.
-          this.recap.getAvailabilityForDocuments([this.docId], this.court, (api_results) => {
-            console.info(`RECAP: Got results from API. Running callback on API results to ` + `insert banner`);
-            let result = api_results.results.filter((obj) => obj.pacer_doc_id == this.docId, this)[0];
-            if (!result) {
-              return;
-            }
-            insertAvailableDocBanner(result.filepath_local, 'div.box');
-          });
+          if (downloadData.docketEntry.documentCount > 1) {
+            let acmsDocumentGuid = downloadData.docketEntryDocuments[0].docketDocumentDetailsId;
+            this.recap.getAvailabilityForACMSDocuments(this.docId, acmsDocumentGuid, (response) =>
+              addRecapBanner(response)
+            );
+          } else {
+            this.recap.getAvailabilityForDocuments([this.docId], this.court, (response) => addRecapBanner(response));
+          }
         }
       }
     }

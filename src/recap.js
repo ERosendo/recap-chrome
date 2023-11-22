@@ -95,6 +95,36 @@ function Recap() {
       });
     },
 
+    // Asks RECAP whether it has the specified documents using the document_guid. This
+    // helper is specially useful on ACMS because documents from attachment pages share
+    // the same pacer_doc_id. Due to this shared identifier, the getAvailabilityForDocuments
+    // method retrieves all available documents associated with the docket entry, potentially
+    // leading to the unnecessary addition of a Recap banner. Using the document_guid in the
+    // request addresses this issue by filtering the documents and retrieving the intended one.
+    getAvailabilityForACMSDocuments: function (pacer_doc_id, acms_document_guid, cb) {
+      if (acms_document_guid && pacer_doc_id) {
+        $.ajax({
+          url: `${SERVER_ROOT}recap-query/`,
+          data: {
+            pacer_doc_id: pacer_doc_id,
+            acms_document_guid: acms_document_guid,
+          },
+          success: function (data, textStatus, xhr) {
+            console.info(`RECAP: Got successful response when looking up document availability: ${textStatus}`);
+            cb(data || null);
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error(
+              `RECAP: Ajax error getting document availability. Status: ${textStatus}. Error: ${errorThrown}`
+            );
+            cb(false);
+          },
+        });
+      } else {
+        cb({});
+      }
+    },
+
     // Asks RECAP whether it has the specified documents.
     getAvailabilityForDocuments: function (pacer_doc_ids, pacer_court, cb) {
       // The server API takes just one "court" parameter for all the URLs, so we
