@@ -110,6 +110,62 @@ AppellateDelegate.prototype.handleAcmsAttachmentPage = async function () {
     }
   };
 
+  const attachLinkToDocs = async () => {
+    // Get the page info from the sessionStorage obj
+    const attachmentsData = JSON.parse(sessionStorage.getItem('recapVueData'));
+    const documentsData = attachmentsData.docketEntryDocuments;
+
+    // Get all the entry links on the page. We use the "entry-link"
+    // class as a selector because we observed that all rows on the
+    // page consistently use this class.
+    this.links = document.body.querySelectorAll('.entry-link');
+    if (!links.length) {
+      return;
+    }
+
+    let docIds = [attachmentsData.docketEntry.docketEntryId];
+
+    // Go through the array of links and embed the document_guid
+    for (link of this.links) {
+      // The document number and the link are enclosed within the
+      // same span tag and are located adjacent to each other.
+      // Therefore, to retrieve the document number, we need to use
+      //  the previousSibling property.
+      let documentNumberText = link.previousSibling.innerHTML.trim();
+      const docData = documentsData.find((document) => document.documentNumber == documentNumberText);
+
+      // Embed the document_guid as a data attribute within the anchor tag
+      // to facilitate subsequent retrieval based on this identifier.
+      link.dataset.documentGuid = docData.docketDocumentDetailsId;
+    }
+
+    // Ask the server whether any of these documents are available from RECAP.
+    this.recap.getAvailabilityForDocuments(docIds, this.court, (response) => {
+      for (result of response.results) {
+        let doc_guid = result.acms_document_guid;
+        // Query the docket entry link using the data attribute attached previously
+        let anchor = document.querySelector(`[data-document-guid="${doc_guid}"]`);
+        // Create the RECAP icon
+        let href = `https://storage.courtlistener.com/${result.filepath_local}`;
+        let recap_link = $('<a/>', {
+          title: 'Available for free from the RECAP Archive.',
+          href: href,
+        });
+        recap_link.append(
+          $('<img/>').attr({
+            src: chrome.extension.getURL('assets/images/icon-16.png'),
+          })
+        );
+        let recap_div = $('<div>', {
+          class: 'recap-inline-appellate',
+        });
+        recap_div.append(recap_link);
+        // Insert the RECAP icon next to the docket entry link
+        recap_div.insertAfter(anchor);
+      }
+    });
+  };
+
   const wrapperMutationObserver = async (mutationList, observer) => {
     for (const r of mutationList) {
       for (const n of r.addedNodes) {
@@ -119,6 +175,7 @@ AppellateDelegate.prototype.handleAcmsAttachmentPage = async function () {
           // Insert script to store Vue data in the storage
           APPELLATE.storeVueDataInSession();
           processAttachmentPage()
+          attachLinkToDocs()
         }
       }
     }
