@@ -30,7 +30,7 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
       // https://ca2-showdoc.azurewebsites.us/documents-list/
       // bde556a7-bdde-ed11-a7c6-001dd806a1fd
     } else if (this.path.startsWith('/documents-list/')) {
-      console.log('we would handle an ACMS attachment page here if we could');
+      this.handleAcmsAttachmentPage();
       // https://ca9-showdoc.azurewebsites.us/23-2082
     } else if (this.path.match(/^\/[0-9\-]+$/)) {
       // this.handleDocketDisplayPage();
@@ -74,6 +74,60 @@ AppellateDelegate.prototype.dispatchPageHandler = function () {
       break;
   }
 };
+
+AppellateDelegate.prototype.handleAcmsAttachmentPage = async function () {
+
+  const processAttachmentPage = async () => {
+    let caseSummary = JSON.parse(sessionStorage.caseSummary);
+    this.pacer_case_id = caseSummary.caseDetails.caseId;
+
+    const options = await getItemsFromStorage('options');
+    if (options['recap_enabled']) {
+      let vueData = JSON.parse(sessionStorage.recapVueData);
+      let requestBody = {
+        caseDetails: caseSummary.caseDetails,
+        docketEntry: vueData.docketEntry,
+        docketEntryDocuments: vueData.docketEntryDocuments,
+      };
+      this.recap.uploadDocket(
+        this.court,
+        this.pacer_case_id,
+        JSON.stringify(requestBody),
+        'ACMS_ATTACHMENT_PAGE',
+        (ok) => {
+          console.log('in cb');
+          if (ok) {
+            console.log('cb success');
+            history.replaceState({ uploaded: true }, '');
+            this.notifier.showUpload('Attachment page uploaded to the public RECAP Archive.', () => {});
+          } else {
+            console.log('cb fail');
+          }
+        }
+      );
+    } else {
+      console.info('RECAP: Not uploading docket json. RECAP is disabled.');
+    }
+  };
+
+  const wrapperMutationObserver = async (mutationList, observer) => {
+    for (const r of mutationList) {
+      for (const n of r.addedNodes) {
+        let isTitle = n.textContent.toLowerCase().includes('documents are attached to this filing');
+        let isTargetingH4Div = n.parentElement.localName === 'h4';
+        if (isTitle && isTargetingH4Div) {
+          // Insert script to store Vue data in the storage
+          APPELLATE.storeVueDataInSession();
+          processAttachmentPage()
+        }
+      }
+    }
+  };
+
+  const wrapper = document.querySelector('.documents-list-wrapper');
+  const observer = new MutationObserver(wrapperMutationObserver);
+  observer.observe(wrapper, { subtree: true, childList: true });
+}
 
 AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
 
