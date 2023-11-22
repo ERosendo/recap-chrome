@@ -82,7 +82,7 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
     let queryParameters = new URLSearchParams(window.location.search);
     let includePageNumbers = !!queryParameters.get('includePageNumbers');
     let showPDFHeaderInput = document.getElementById('showPdfHeader').checked;
-    let downloadData = JSON.parse(sessionStorage.getItem('recapDownloadConfirmationData'));
+    let downloadData = JSON.parse(sessionStorage.getItem('recapVueData'));
 
     // Get the ACMS API URL and token from the sessionStorage object
     let appConfiguration = JSON.parse(sessionStorage.getItem('recapACMSConfiguration'));
@@ -165,7 +165,7 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
         let hasAcceptChargesButton = n.textContent.toLowerCase().includes('accept charges and retrieve');
         if (n.localName === 'div' && hasReceipt && hasAcceptChargesButton) {
           // Insert script to store Vue data in the storage
-          APPELLATE.storeDownloadDataInSession();
+          APPELLATE.storeVueDataInSession();
 
           // Check if the accept charges button is already created on the page
           let acceptChargesButton = document.querySelector('button');
@@ -174,7 +174,7 @@ AppellateDelegate.prototype.handleDownloadConfirmationPage = async function () {
           }
 
           // Get doc_id from the sessionStorage
-          let downloadData = JSON.parse(sessionStorage.getItem('recapDownloadConfirmationData'));
+          let downloadData = JSON.parse(sessionStorage.getItem('recapVueData'));
           this.docId = downloadData.docketEntry.docketEntryId;
 
           // Clone the accept charges button to remove the default onclick event.

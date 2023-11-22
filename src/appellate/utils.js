@@ -425,14 +425,14 @@ let APPELLATE = {
   },
 
   // Adds the vue data attributes to the session storage
-  storeDownloadDataInSession: () => {
+  storeVueDataInSession: () => {
     var code =
       '(' +
       function () {
         let contentWrapper = document.getElementsByClassName('text-center')[0];
         let vueMainDiv = contentWrapper.parentElement;
         let vueDataProperties = vueMainDiv.__vue__._data;
-        sessionStorage.setItem('recapDownloadConfirmationData', JSON.stringify(vueDataProperties));
+        sessionStorage.setItem('recapVueData', JSON.stringify(vueDataProperties));
         sessionStorage.setItem('recapACMSConfiguration', JSON.stringify(window._model));
       } +
       ')();';
